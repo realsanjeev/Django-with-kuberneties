@@ -18,6 +18,7 @@ import dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENV_FILE_PATH = BASE_DIR / ".env"
+dotenv.read_dotenv(str(ENV_FILE_PATH))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -25,7 +26,7 @@ ENV_FILE_PATH = BASE_DIR / ".env"
 SECRET_KEY = os.environ.get("PRODUCTION_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str(os.environ.get("DEBUG")) == "1"
 
 ALLOWED_HOSTS = []
 
@@ -82,7 +83,32 @@ DATABASES = {
     }
 }
 
+IS_POSTGRES_READY = str(os.environ.get("PROSTGRES_READY")) == "1"
+DB_NAME = os.environ.get("PROSTGRES_DB")
+DB_PASSWORD = os.environ.get("PROSTGRES_PASSWORD")
+DB_USER = os.environ.get("PROSTGRES_USER")
+DB_HOST = os.environ.get("PROSTGRES_HOST")
+DB_PORT = os.environ.get("PROSTGRES_PORT")
 
+DB_IS_AVAIL = all([
+    DB_NAME,
+    DB_PASSWORD,
+    DB_USER,
+    DB_HOST,
+    DB_PORT
+])
+
+if DB_IS_AVAIL and IS_POSTGRES_READY:
+    DATABASES = {
+        "default": {
+            'ENGINE': 'django.db.backends.postgresql',
+            "NAME": DB_NAME,
+            "PASSWORD": DB_PASSWORD,
+            "USER": DB_USER,
+            "HOST": DB_HOST,
+            "PORT": DB_PORT
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 

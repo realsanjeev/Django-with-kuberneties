@@ -28,6 +28,14 @@ SECRET_KEY = os.environ.get("PRODUCTION_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = str(os.environ.get("DEBUG")) == "1"
 
+# for github workspace working
+if 'CODESPACE_NAME' in os.environ:
+    codespace_name = os.getenv("CODESPACE_NAME")
+    codespace_domain = os.getenv("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN")
+    CSRF_TRUSTED_ORIGINS = [f'https://{codespace_name}-8000.{codespace_domain}',
+                            'http://localhost:8000', 'https://localhost:8000']
+
+
 ALLOWED_HOSTS = []
 
 
@@ -90,7 +98,7 @@ DB_USER = os.environ.get("PROSTGRES_USER")
 DB_HOST = os.environ.get("PROSTGRES_HOST")
 DB_PORT = os.environ.get("PROSTGRES_PORT")
 
-DB_IS_AVAIL = all([
+DB_IS_AVAILABLE = all([
     DB_NAME,
     DB_PASSWORD,
     DB_USER,
@@ -98,7 +106,7 @@ DB_IS_AVAIL = all([
     DB_PORT
 ])
 
-if DB_IS_AVAIL and IS_POSTGRES_READY:
+if DB_IS_AVAILABLE and IS_POSTGRES_READY:
     DATABASES = {
         "default": {
             'ENGINE': 'django.db.backends.postgresql',
